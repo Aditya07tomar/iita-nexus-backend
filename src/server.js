@@ -8,10 +8,12 @@ const app = express(); // 3. INITIALIZE APP BEFORE USING IT (This fixes the erro
 
 // 4. Now you can use app.use
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true
+    // MUST include 'https://' and MUST NOT have a trailing slash '/'
+    origin: 'https://iita-nexus-frontend.vercel.app', 
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
 app.use(express.json());
 
 // Your routes follow...
