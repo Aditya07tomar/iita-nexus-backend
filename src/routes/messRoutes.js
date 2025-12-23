@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const messController = require('../controllers/messController');
-const { protect } = require('../middleware/authMiddleware');
 
-// Route: GET /api/mess/today
-// We use 'protect' so only logged-in students can see the menu
-router.get('/today', protect, messController.getTodayMenu);
+// Check line 8 - make sure the function name matches the controller exactly
+router.get('/', messController.getMessMenu); 
+router.put('/update', messController.updateMessMenu);
 
 module.exports = router;
