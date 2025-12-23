@@ -3,40 +3,35 @@ const db = require('../config/db');
 
 exports.askCampusBrain = async (userQuestion) => {
     try {
-        // DEBUG 1: Check if API Key is loading
         if (!process.env.GEMINI_API_KEY) {
-            console.error("❌ ERROR: GEMINI_API_KEY is missing from .env file!");
-            throw new Error("API Key configuration missing");
+            throw new Error("GEMINI_API_KEY is missing in Render environment variables");
         }
 
-        // 1. Fetch context
+        // 1. Get today's context from Mess Menu
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const today = days[new Date().getDay()];
         
         const [menuData] = await db.execute('SELECT * FROM mess_menu WHERE day_of_week = ?', [today]);
         const contextString = menuData.length > 0 
-            ? menuData.map(m => `${m.meal_type}: ${m.items}`).join(", ") 
-            : "Menu not updated.";
+            ? menuData.map(m => `Day: ${m.day_of_week}, Breakfast: ${m.breakfast}, Lunch: ${m.lunch}, Dinner: ${m.dinner}`).join(" | ") 
+            : "The mess menu for today has not been updated yet.";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        // 2. Initialize Gemini
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-const model = genAI.getGenerativeModel(
-    { model: "gemini-2.0-flash-lite" }, 
-    { apiVersion: 'v1' } // This forces the SDK to use /v1/ instead of /v1beta/
-);
-
-        // 3. Generate content
-        const prompt = `User asked: ${userQuestion}. Context: ${contextString}`;
+        // 3. Craft the Prompt
+        const prompt = `You are Nexus AI, the official assistant for IITA (Indian Institute of Technology & Advanced Studies). 
+        Use the following database context to answer the student's question accurately. 
+        Context: ${contextString}. 
+        User Question: ${userQuestion}`;
         
-        console.log("🤖 Sending prompt to Gemini...");
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        
         return response.text();
 
     } catch (error) {
-        // DEBUG 2: Log the REAL error to your terminal
-        console.error("🔥 DETAILED AI ERROR:", error.message);
-        throw new Error(`AI Service Failed: ${error.message}`);
+        console.error("AI Service Error:", error.message);
+        throw error;
     }
 };

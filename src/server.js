@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const placementRoutes = require('./routes/placementRoutes');
 const messRoutes = require('./routes/messRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/auth', authRoutes);
 // If your frontend calls api.post('/api/placements'), use this:
 app.use('/api', placementRoutes);
 app.use('/mess', messRoutes);
+app.use('/api/ai', aiRoutes);
 
 // 5. Global Error Handler (Prevents the server from crashing on errors)
 app.use((err, req, res, next) => {
