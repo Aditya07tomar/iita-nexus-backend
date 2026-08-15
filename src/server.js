@@ -31,7 +31,8 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:5174',
     'http://localhost:3000',
-    'https://iita-nexus-frontend.vercel.app'
+    'https://iita-nexus-frontend.vercel.app',
+    'https://campusflowiiita.vercel.app' // Added your current frontend URL
 ];
 
 app.use(cors({
@@ -44,7 +45,8 @@ app.use(cors({
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    // Added OPTIONS method for preflight requests
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
