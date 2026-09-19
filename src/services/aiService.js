@@ -31,6 +31,9 @@ exports.askCampusBrain = async (userQuestion) => {
         const today = days[now.getDay()];
         const todayDate = now.toISOString().split('T')[0];
 
+        // Ensure outdated placements are closed before fetching
+        await db.execute('UPDATE placements SET status = "Closed" WHERE status = "Open" AND deadline < CURDATE()');
+
         // ── Fetch all campus data in parallel ──
         const [menuData, placements, events, announcements, busSchedule, lostFound] = await Promise.all([
             safeQuery('SELECT * FROM mess_menu', 'mess menu'),
