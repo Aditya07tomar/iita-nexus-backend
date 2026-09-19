@@ -12,8 +12,8 @@ exports.getListings = async (req, res) => {
         const params = [];
 
         if (category) { conditions.push('m.category = ?'); params.push(category); }
-        if (status) { conditions.push('m.status = ?'); params.push(status); }
-        else { conditions.push("m.status = 'available'"); } // Default: show only available
+        if (status && status !== 'all') { conditions.push('m.status = ?'); params.push(status); }
+        else if (!status) { conditions.push("m.status = 'available'"); } // Default: show only available (unless 'all' requested)
         if (search) {
             conditions.push('(m.title LIKE ? OR m.description LIKE ?)');
             const s = `%${search}%`;
