@@ -4,7 +4,7 @@ const db = require('../config/db');
 exports.getAllPlacements = async (req, res) => {
     try {
         // Automatically close placements whose deadline has passed
-        await db.execute('UPDATE placements SET status = "Closed" WHERE status = "Open" AND deadline < CURDATE()');
+        await db.execute("UPDATE placements SET status = 'Closed' WHERE status = 'Open' AND deadline < CURDATE()");
         
         const [rows] = await db.execute('SELECT * FROM placements ORDER BY deadline ASC');
         res.json(rows);
